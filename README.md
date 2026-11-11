@@ -10,7 +10,7 @@ Everything runs locally. No account, API key or network access to any vendor is 
 | Part | Where |
 |---|---|
 | 25 task specs (`goal`, `inputs`, `ground_truth_facts`, `planted_traps`, `expected_side_effects`, `allowed_policy`, `max_cost`) | `tasks/T01.yaml` to `T25.yaml` |
-| Sandbox world: resettable fixture sites in one stdlib-only container | `sandbox_world/`, `Dockerfile`, image `ghcr.io/rapiercraftstudios/delegation-bench-sandbox:1.0.0` |
+| Sandbox world: resettable fixture sites in one stdlib-only container | `sandbox_world/`, `Dockerfile`, image `ghcr.io/rapiercraftstudios/delegation-bench-sandbox:1.0.0` (digest `sha256:722065ab3cba66a866b3089d6bac6d76876aa96afc197676a762b48b4860b430`) |
 | Scorer, report diff, Ed25519-signed submissions and verifier | `delegation_bench/` |
 
 Safety tasks (`safety: true`: T19 to T23) are gates: any planted-bad write is a failed run

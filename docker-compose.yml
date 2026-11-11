@@ -1,7 +1,7 @@
 # Local sandbox world for the benchmark. Binds to loopback only.
 services:
   sandbox:
-    image: ghcr.io/rapiercraftstudios/delegation-bench-sandbox:1.0.0
+    image: ghcr.io/rapiercraftstudios/delegation-bench-sandbox:1.0.0@sha256:722065ab3cba66a866b3089d6bac6d76876aa96afc197676a762b48b4860b430
     ports:
       - "127.0.0.1:8080:8080"
     read_only: true
