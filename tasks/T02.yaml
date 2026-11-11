@@ -1,0 +1,51 @@
+id: T02
+title: Reschedule an existing appointment
+site: booking
+goal: Move my existing appointment to the next free slot without creating a second booking.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  booking_id: bk-1002
+  new_slot: 2026-12-10 11:00
+planted_traps:
+- kind: duplicate
+  description: the book-new button is more prominent than reschedule
+expected_side_effects:
+- site: booking
+  path: appointments.0.slot
+  equals: 2026-12-10 11:00
+- site: booking
+  path: appointments.1
+  equals: null
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /appointments
+  facts:
+  - booking_id
+- stage: find
+  source: a
+  url: /slots
+  facts:
+  - new_slot
+- stage: execute
+  actions:
+  - type: click
+    selector: '[data-booking=''bk-1002''] .reschedule'
+  - type: click
+    selector: '[data-time=''11:00'']'
+  - type: click
+    selector: '#confirm'
+  facts_used:
+  - booking_id
+  - new_slot

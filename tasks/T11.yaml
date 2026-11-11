@@ -1,0 +1,142 @@
+id: T11
+title: Update an address across 8 account sites
+site: acct1
+goal: Update my address on all eight account sites and report which ones failed.
+inputs:
+  sites: 8
+  partial_failure: acct8 rejects the save with a validation error
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  address: 12 Harbour Road, Leith
+planted_traps:
+- kind: partial_failure
+  description: one account site rejects the change
+expected_side_effects:
+- site: acct1
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct2
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct3
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct4
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct5
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct6
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct7
+  path: profile.address
+  equals: 12 Harbour Road, Leith
+- site: acct8
+  path: profile.address
+  equals: 1 Old Street
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 8000000
+script:
+- stage: find
+  source: a
+  url: /profile
+  facts:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct1
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct2
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct3
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct4
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct5
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct6
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct7
+  facts_used:
+  - address
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#address'
+    value:
+      fact: address
+  - type: click
+    selector: '#save'
+  site: acct8
+  facts_used:
+  - address

@@ -1,0 +1,51 @@
+id: T01
+title: Book an appointment inside the user's free calendar slots
+site: booking
+goal: Book a 30 minute appointment on a day and time that is free in the user's calendar.
+inputs:
+  free_slots:
+  - 2026-12-03 10:30
+  - 2026-12-04 14:00
+  busy:
+  - 2026-12-03 09:00-10:00
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  slot: 2026-12-03 10:30
+planted_traps:
+- kind: calendar_constraint
+  description: earlier slots overlap the user's busy time
+- kind: widget
+  description: date picker is a custom calendar widget
+expected_side_effects:
+- site: booking
+  path: appointments.0.slot
+  equals: 2026-12-03 10:30
+- site: booking
+  path: appointments.1
+  equals: null
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /slots
+  facts:
+  - slot
+- stage: execute
+  actions:
+  - type: click
+    selector: '[data-date=''2026-12-03'']'
+  - type: click
+    selector: '[data-time=''10:30'']'
+  - type: click
+    selector: '#confirm'
+  facts_used:
+  - slot

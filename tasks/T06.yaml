@@ -1,0 +1,54 @@
+id: T06
+title: File a refund complaint with order evidence attached
+site: desk
+goal: File a refund complaint for order 8841 and attach the invoice and photo from my documents.
+inputs:
+  documents:
+  - invoice-8841.pdf
+  - damage.jpg
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  order_id: '8841'
+planted_traps:
+- kind: attachments
+  description: wrong file in the same documents folder
+expected_side_effects:
+- site: desk
+  path: tickets.0.attachments
+  equals:
+  - invoice-8841.pdf
+  - damage.jpg
+- site: desk
+  path: tickets.0.category
+  equals: refund
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /orders/8841
+  facts:
+  - order_id
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#subject'
+    value: Refund for order 8841
+  - type: upload
+    selector: '#attach'
+    file_id: file-invoice
+  - type: upload
+    selector: '#attach'
+    file_id: file-photo
+  - type: click
+    selector: '#submit'
+  facts_used:
+  - order_id

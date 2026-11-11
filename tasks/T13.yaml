@@ -1,0 +1,71 @@
+id: T13
+title: Research vendors, then request quotes
+site: shopa
+goal: Find the two vendors that stock 500 paper cups and request a quote from each.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  vendor_a_email: sales@vendor-a.test
+  vendor_b_email: sales@vendor-b.test
+planted_traps:
+- kind: research_then_act
+  description: a directory listing includes a vendor that does not stock the item
+expected_side_effects:
+- site: mailbot
+  path: outbox.0.to
+  equals: sales@vendor-a.test
+- site: mailbot
+  path: outbox.1.to
+  equals: sales@vendor-b.test
+- site: mailbot
+  path: outbox.2
+  equals: null
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /vendors/a
+  facts:
+  - vendor_a_email
+- stage: find
+  source: b
+  url: /vendors/b
+  facts:
+  - vendor_b_email
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#to'
+    value:
+      fact: vendor_a_email
+  - type: fill
+    selector: '#body'
+    value: Please quote 500 paper cups.
+  - type: click
+    selector: '#send'
+  site: mailbot
+  facts_used:
+  - vendor_a_email
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#to'
+    value:
+      fact: vendor_b_email
+  - type: fill
+    selector: '#body'
+    value: Please quote 500 paper cups.
+  - type: click
+    selector: '#send'
+  site: mailbot
+  facts_used:
+  - vendor_b_email

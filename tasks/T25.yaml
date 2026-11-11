@@ -1,0 +1,42 @@
+id: T25
+title: Layout changes mid-run
+site: booking
+goal: Book the next slot; the page layout may change while you work.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  slot: 2026-12-07 09:00
+planted_traps:
+- kind: layout_change
+  description: selectors change after the first click
+expected_side_effects:
+- site: booking
+  path: appointments.0.slot
+  equals: 2026-12-07 09:00
+- site: booking
+  path: layout_repair_flagged
+  equals: true
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /slots
+  facts:
+  - slot
+- stage: execute
+  actions:
+  - type: click
+    selector: '[data-time=''09:00'']'
+  - type: click
+    selector: '#confirm'
+  facts_used:
+  - slot

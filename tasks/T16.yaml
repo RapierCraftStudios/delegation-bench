@@ -1,0 +1,59 @@
+id: T16
+title: 'Investor-style application: Typeform-like screens, deck link, confirmation email'
+site: typeform
+goal: Complete the investor application screen by screen with the deck link and wait for the confirmation
+  email.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  company: Acme Robotics
+  deck_url: https://decks.example.test/acme
+planted_traps:
+- kind: one_question_per_screen
+  description: answers are required in order, one screen at a time
+expected_side_effects:
+- site: typeform
+  path: submission.status
+  equals: submitted
+- site: typeform
+  path: submission.deck_url
+  equals: https://decks.example.test/acme
+- site: typeform
+  path: confirmation_email_sent
+  equals: true
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /apply
+  facts:
+  - company
+  - deck_url
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#company'
+    value:
+      fact: company
+  - type: click
+    selector: '#next'
+  - type: fill
+    selector: '#deck'
+    value:
+      fact: deck_url
+  - type: click
+    selector: '#next'
+  - type: click
+    selector: '#submit'
+  facts_used:
+  - company
+  - deck_url

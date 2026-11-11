@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+*.key
+signing.key
+report.json
+*.egg-info/

@@ -1,0 +1,59 @@
+id: T09
+title: Tax-style form with values computed from two uploaded documents
+site: tax
+goal: Fill the tax form using the income statement and the deduction receipt, and cross-check the totals.
+inputs:
+  documents:
+  - income-statement.pdf
+  - receipts.pdf
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  income: '52000'
+  deductions: '3400'
+  taxable: '48600'
+planted_traps:
+- kind: cross_check
+  description: computed field must equal income minus deductions
+expected_side_effects:
+- site: tax
+  path: return.taxable_income
+  equals: 48600
+- site: tax
+  path: return.status
+  equals: filed
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /documents
+  facts:
+  - income
+  - deductions
+  - taxable
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#income'
+    value:
+      fact: income
+  - type: fill
+    selector: '#deductions'
+    value:
+      fact: deductions
+  - type: click
+    selector: '#compute'
+  - type: click
+    selector: '#file'
+  facts_used:
+  - income
+  - deductions
+  - taxable

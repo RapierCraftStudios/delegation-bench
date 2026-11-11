@@ -1,0 +1,57 @@
+id: T05
+title: File a support ticket and follow up by email until resolved
+site: desk
+goal: File a ticket about the failed export and follow up by email until it is resolved.
+inputs:
+  recurrence: daily until resolved
+  desk_stub: email-in/email-out
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  ticket_ref: TK-5001
+planted_traps:
+- kind: multi_day
+  description: resolution arrives on a later day in the thread
+expected_side_effects:
+- site: desk
+  path: tickets.0.status
+  equals: resolved
+- site: desk
+  path: tickets.0.messages_from_user
+  equals: 2
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /tickets/new
+  facts:
+  - ticket_ref
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#subject'
+    value: Export failed
+  - type: fill
+    selector: '#body'
+    value: The CSV export fails with error 500.
+  - type: click
+    selector: '#submit'
+  facts_used:
+  - ticket_ref
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#reply'
+    value: 'Following up: any update on TK-5001?'
+  - type: click
+    selector: '#send'
+  facts_used:
+  - ticket_ref

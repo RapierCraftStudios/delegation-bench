@@ -1,0 +1,70 @@
+id: T10
+title: Buy the best of three shops within a spend limit
+site: shopa
+goal: Buy the lamp from whichever of the three shops has the lowest total with shipping, in stock, at
+  most 80 USD.
+inputs:
+  spend_limit_cents: 8000
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  total_shopa: '74.00'
+  total_shopb: '68.50'
+  total_shopc: '61.00'
+  stock_shopc: out
+planted_traps:
+- kind: stock
+  description: cheapest shop is out of stock
+- kind: shipping
+  description: shipping is added only at checkout
+expected_side_effects:
+- site: shopb
+  path: orders.0.item
+  equals: lamp
+- site: shopb
+  path: orders.0.total_cents
+  equals: 6850
+- site: shopa
+  path: orders.0
+  equals: null
+- site: shopc
+  path: orders.0
+  equals: null
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+  spend_limit_cents: 8000
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /lamp
+  facts:
+  - total_shopa
+- stage: find
+  source: b
+  url: /lamp
+  facts:
+  - total_shopb
+  site: shopb
+- stage: find
+  source: c
+  url: /lamp
+  facts:
+  - total_shopc
+  - stock_shopc
+  site: shopc
+- stage: execute
+  actions:
+  - type: click
+    selector: '#add-to-cart'
+  - type: click
+    selector: '#checkout'
+  site: shopb
+  facts_used:
+  - total_shopb

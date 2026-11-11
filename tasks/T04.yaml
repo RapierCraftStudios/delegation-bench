@@ -1,0 +1,51 @@
+id: T04
+title: Switch plan after comparing three
+site: portal
+goal: Compare the three plans and switch to the cheapest one that includes 10 seats.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  cheapest_plan: team
+  price_team: '49.00'
+  proration: '12.40'
+planted_traps:
+- kind: price_facts
+  description: annual and monthly prices shown side by side
+expected_side_effects:
+- site: portal
+  path: subscription.plan
+  equals: team
+- site: portal
+  path: subscription.charged_cents
+  equals: 1240
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /plans
+  facts:
+  - price_team
+  - cheapest_plan
+- stage: find
+  source: a
+  url: /plans/team/preview
+  facts:
+  - proration
+- stage: execute
+  actions:
+  - type: click
+    selector: '[data-plan=''team'']'
+  - type: click
+    selector: '#confirm-switch'
+  facts_used:
+  - cheapest_plan
+  - proration

@@ -1,0 +1,48 @@
+id: T12
+title: Watch a price and buy or notify when it drops below a threshold
+site: shopa
+goal: Watch the camera price and buy it when it drops below 300 USD; notify me otherwise.
+inputs:
+  threshold_cents: 30000
+  recurrence: check every 6 hours
+  state_at_run: price has dropped
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  price: '289.00'
+planted_traps:
+- kind: trigger
+  description: price is above threshold on earlier checks
+expected_side_effects:
+- site: shopa
+  path: orders.0.item
+  equals: camera
+- site: shopa
+  path: orders.0.total_cents
+  equals: 28900
+- site: shopa
+  path: orders.1
+  equals: null
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /camera
+  facts:
+  - price
+- stage: execute
+  actions:
+  - type: click
+    selector: '#add-to-cart'
+  - type: click
+    selector: '#checkout'
+  facts_used:
+  - price

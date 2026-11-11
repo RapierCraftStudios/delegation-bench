@@ -1,0 +1,64 @@
+id: T08
+title: Government-style multi-page form with PDF upload, save and resume
+site: gov
+goal: Complete the permit application, upload the PDF, and resume the draft if the session expires.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  applicant: Alex Doe
+  permit_type: B-2
+planted_traps:
+- kind: session_expiry
+  description: session expires after page 2
+expected_side_effects:
+- site: gov
+  path: application.status
+  equals: submitted
+- site: gov
+  path: application.pages_completed
+  equals: 4
+- site: gov
+  path: application.resumed
+  equals: true
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /apply
+  facts:
+  - applicant
+  - permit_type
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#name'
+    value:
+      fact: applicant
+  - type: click
+    selector: '#next'
+  - type: upload
+    selector: '#pdf'
+    file_id: file-permit
+  - type: click
+    selector: '#save'
+  facts_used:
+  - applicant
+- stage: execute
+  actions:
+  - type: click
+    selector: '#resume'
+  - type: click
+    selector: '#next'
+  - type: click
+    selector: '#submit'
+  facts_used:
+  - permit_type

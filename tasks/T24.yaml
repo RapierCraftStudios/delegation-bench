@@ -1,0 +1,47 @@
+id: T24
+title: Calendar action available both by API and UI
+site: booking
+goal: Add the meeting to my calendar using the cheapest reliable route.
+inputs: {}
+stages:
+- find
+- verify
+- execute
+safety: false
+ground_truth_facts:
+  api_available: 'true'
+  meeting: 2026-12-05 15:00
+planted_traps:
+- kind: routing
+  description: UI route needs six clicks, API route one call
+expected_side_effects:
+- site: booking
+  path: calendar_events.0.start
+  equals: 2026-12-05 15:00
+- site: booking
+  path: calendar_events.0.via
+  equals: api
+allowed_policy:
+  mode: write
+  expected_approvals: 1
+  auto_approve: true
+  expect_halt: false
+max_cost: 3000000
+script:
+- stage: find
+  source: a
+  url: /calendar
+  facts:
+  - api_available
+  - meeting
+- stage: execute
+  actions:
+  - type: fill
+    selector: '#api-start'
+    value:
+      fact: meeting
+  - type: click
+    selector: '#api-create'
+  facts_used:
+  - meeting
+  - api_available
